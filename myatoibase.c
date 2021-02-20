@@ -6,10 +6,13 @@
 
 int convert(char letter)
 {
-    if (letter >= '0' && letter <= '9') {
-        return (int) letter - '0';
+    if (letter == '!') {
+        return 36;
     }
-    return (int)letter - 'A' + 10;
+    if (letter >= '0' && letter <= '9') {
+        return (int)letter - '0';
+    }
+    return (int)letter - 'a' + 10;
 }
 
 int checkPointerValidity(const char *ptr, const int base)
@@ -25,7 +28,7 @@ int checkPointerValidity(const char *ptr, const int base)
             // On vérifie que chaque caractère est cohérent avec la base donnée
             if (!(ptr[i] >= '0' && ptr[i] < ('0' + base))) {
                 // On fait une exception si c'est le premier caractère => - à la place d'un caractère de la base
-                if (!(i == 0 && ptr[i] == '-')) {
+                if (i != 0 && ptr[i] == '-') {
                     return 0;
                 }
             }
@@ -37,7 +40,7 @@ int checkPointerValidity(const char *ptr, const int base)
             // On vérifie que chaque caractère est cohérent avec la base donnée
             if (!((ptr[i] >= '0' && ptr[i] < ('0' + base)) || (ptr[i] >= 'A' && ptr[i] < ('A' + base - 10)))) {
                 // On fait une exception si c'est le premier caractère => - à la place d'un caractère de la base
-                if (!(i == 0 && ptr[i] == '-')) {
+                if (i != 0 && ptr[i] == '-') {
                     return 0;
                 }
             }
@@ -60,20 +63,22 @@ int myatoibase(const char *ptr, const int base)
         return -2;
     }
 
-    int len = strlen(ptr);
     int power = 1;
     int num = 0;
     int i;
 
-    for (i = len - 1; i >= 0; i--) {
-        if (convert(ptr[i]) >= base) {
-            return -1;
-        }
 
-        num += convert(ptr[i]) * power;
-        power = power * base;
+    for (i = strlen(ptr) - 1; i >= 0; i--) {
+        if (ptr[i] != '-') {
+            if (convert(ptr[i]) >= base) {
+                return -1;
+            }
+            num += convert(ptr[i]) * power;
+            power = power * base;
+        }
     }
 
+    num = (ptr[0] == '-') ? (num * (-1)) : num;
     return num;
 }
 
